@@ -1,0 +1,28 @@
+/* HEADER */
+.magazine-header_bg{background:url('/static/images/common/back_magazine.jpg') center/cover no-repeat;width: 100%;height: 244px;display: flex;align-items: flex-end;justify-content: center;}
+.magazine-header {background: #ffffff;width: 1095px;max-width: 1095px;height: 107px;display: flex;align-items: center;padding: 0 28px;border-top-left-radius: 24px;border-top-right-radius: 24px;}
+
+/* SEARCHING */
+.search-title {font-size:30px; font-weight: 500;text-align: center; width:300px;margin-right: 100px;}
+.search-container {display: flex;align-items: center;width: 100%;max-width: 600px;background: #fff;border-radius: 999px;padding: 6px;box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);}
+.search-box {flex: 1;display: flex;align-items: center;padding: 0 14px;}
+.search-icon {font-size: 16px;color: #9ca3af;margin-right: 8px;}
+.search-icon img {height:28px;}
+.search-box input {border: none;outline: none;width: 100%;font-size: 14px;color: #111827;}
+.search-box input::placeholder {color: #9ca3af;}
+.search-btn {border: none;padding: 10px 20px;border-radius: 999px;background: #2563eb;color: #fff;font-size: 14px;font-weight: 600;cursor: pointer;}
+.search-btn:hover {background: #1e40af;}
+
+/* LIST */
+.magazine-body {width:100%;padding-top:20px;}
+.magazine-category{margin:0 auto;width:1250px;padding-bottom:20px;}
+.magazine-body ul{margin:0 auto;width:1250px;display: flex;flex-flow: row wrap;justify-content: space-between;}
+.magazine_item {width:300px;margin-bottom: 30px;}
+.magazine_item p{height: 66px;overflow: hidden;text-overflow: ellipsis;line-height: 150%;color: #585a74;font-family: SUIT, sans-serif;font-size: 14px;font-weight: 400;margin: 0 0 17px;}
+.magazine_item img{width:300px;height:200px; border-top-left-radius: 15px;border-top-right-radius: 15px;object-fit: cover; /* 또는 contain, fill, scale-down, none */}
+.magazine_item figure{border-bottom: 1px solid #d3d3d3;}
+.magazine_item figcaption{padding:15px 8px 12px;}
+.magazine_item .card-category{font-family: SUIT, sans-serif;font-size: 14px;font-weight: 400;line-height: normal;line-height: 150%;color: #3e404e;margin-bottom: 0;}
+.magazine_item .card-title{overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;text-decoration: none;font-family: SUIT, sans-serif;font-size: 18px;font-weight: 600;line-height: normal;height: 24px;color: #3e404e;margin: 12px 0px;}
+.magazine_item .card-date{display: block;color: #9d9d9d;font-size: 12px;line-height: 1.5;}
+

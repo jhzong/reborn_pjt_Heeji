@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block css %}
+<link rel='stylesheet' href="/static/css/restaurants.css">
+<link rel='stylesheet' href="/static/css/home.css">
+<style>
+/* HEADER */
+/*.r_header {
+    background: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.r_logo {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.r_search-box {
+    display: flex;
+    gap: 10px;
+}
+
+.r_search-box input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.r_search-box button {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #111;
+    color: #fff;
+}*/
+.r_search-box {
+    position: relative; /* 자식 요소인 아이콘의 기준점이 됩니다 */
+}
+
+.r_search-box button{
+    cursor: pointer;
+}
+
+/* 2. 아이콘 위치 최적화 */
+.filter-icon-button {
+    position: absolute;
+    /* 버튼(검색) 너비와 간격을 고려하여 오른쪽에서 띄움 */
+    /* 보통 검색 버튼의 너비가 70~80px이므로 그 앞에 위치시킵니다 */
+    right: 85px; 
+    top: 50%; /* 정확히 세로 중앙 */
+    transform: translateY(-50%); /* 정확히 세로 중앙 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10;
+    display: flex; /* 아이콘 이미지 정렬 */
+    align-items: center;
+}
+
+.filter-icon-button img {
+    width: 24px;
+    height: 24px;
+}
+
+/* 3. 입력창이 아이콘과 겹치지 않게 여백 주기 */
+.r_search-box input {
+    flex: 1;
+    padding: 12px;
+    padding-right: 45px; /* 아이콘이 들어갈 공간 확보 (중요) */
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+</style>
+{% endblock css %}
+{% block script %}
+<script>
+    function searchData() {
+        let url = "/restaurants/reslist";
+        location.href = url+"?"+frm;
+        //location.href = url+"?"+encodeURIComponent(frm);
+        /*$.ajax({
+            url:url,
+            type: 'GET',
+            dataType:'json',
+            data:$("#searchFrm").serialize(),
+            success: function(data) {
+                location.href="/restaurants/rlist";
+            },
+            error: function(xhr, errMsg, err) {
+                //console.error("서버 에러 : ", errMsg);
+                alert("서버에러");
+            }
+        });*/
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 지역 슬라이드
+        const sliderTrack = document.querySelector('.slider-track');
+        const prevBtn = document.querySelector('.slide-btn.prev');
+        const nextBtn = document.querySelector('.slide-btn.next');
+
+        let isDragging = false;
+        let startX = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+        let animationID;
+        let sliderWidth = 0;
+        let containerWidth = 0;
+
+        // 초기 설정
+        window.addEventListener('load', () => {
+        sliderWidth = sliderTrack.scrollWidth;
+        containerWidth = sliderTrack.parentElement.offsetWidth;
+        });
+
+        sliderTrack.addEventListener('mousedown', dragStart);
+        sliderTrack.addEventListener('touchstart', dragStart);
+
+        sliderTrack.addEventListener('mouseup', dragEnd);
+        sliderTrack.addEventListener('touchend', dragEnd);
+
+        sliderTrack.addEventListener('mouseleave', dragEnd);
+
+        sliderTrack.addEventListener('mousemove', dragMove);
+        sliderTrack.addEventListener('touchmove', dragMove);
+
+        function dragStart(e) {
+        isDragging = true;
+        startX = getPositionX(e);
+        sliderTrack.classList.add('dragging');
+            animationID = requestAnimationFrame(animation);
+        }
+
+        function dragEnd() {
+        isDragging = false;
+        prevTranslate = currentTranslate;
+        sliderTrack.classList.remove('dragging');
+        cancelAnimationFrame(animationID);
+        checkBounds();
+        }
+
+        function dragMove(e) {
+        if (!isDragging) return;
+        const currentPosition = getPositionX(e);
+        const diff = currentPosition - startX;
+        currentTranslate = prevTranslate + diff;
+        }
+
+        function getPositionX(event) {
+        return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+        }
+
+        function animation() {
+        setSliderPosition();
+        if (isDragging) requestAnimationFrame(animation);
+        }
+
+        function setSliderPosition() {
+        sliderTrack.style.transform = `translateX(${currentTranslate}px)`;
+        }
+
+        // 경계 체크 (슬라이더가 너무 좌우로 움직이지 않게 제한)
+        function checkBounds() {
+        if (currentTranslate > 0) {
+            currentTranslate = 0;
+        }
+        if (Math.abs(currentTranslate) > sliderWidth - containerWidth) {
+            currentTranslate = -(sliderWidth - containerWidth);
+        }
+        prevTranslate = currentTranslate;
+        setSliderPosition();
+        }
+
+        // 좌우 버튼 클릭 이벤트
+        prevBtn.addEventListener('click', () => {
+        currentTranslate += 160; // 한 칸씩 이동 (아이템 너비 + gap)
+        if (currentTranslate > 0) currentTranslate = 0;
+        prevTranslate = currentTranslate;
+        setSliderPosition();
+        });
+
+        nextBtn.addEventListener('click', () => {
+        currentTranslate -= 160;
+        if (Math.abs(currentTranslate) > sliderWidth - containerWidth) {
+            currentTranslate = -(sliderWidth - containerWidth);
+        }
+        prevTranslate = currentTranslate;
+        setSliderPosition();
+        });
+    });
+
+    let frm = {};
+    $(document).ready(function() {
+        //검색필터 적용
+        $(document).on("click", ".btn-apply-filter", function () {
+            frm = $("#searchFrm").serialize();
+
+            // 아이콘 변경
+            $("#filterBtn img").attr("src", "/static/images/home/icon_filter_on.png");
+
+            // 팝업 닫기
+            $(".modal").hide();
+            $("body").removeClass("modal-open");
+        });
+
+        //검색버튼 클릭
+        $('#filterBtn').on('click', function(){
+            SearchFilterModal('modal-filter', 'filterBtn', frm);
+        });
+    });
+</script>
+{% endblock script %}
+{% block body %}
+<div id='header_bg'>
+    <div clss='main-header-area'>
+    </div>
+</div>
+<header class="r_header">
+    <h1 class="r_logo">🍽️ 미식 가이드</h1>
+
+    <div class="r_search-box">
+        {% comment %} <a class="filter-icon-button" data-toggle="modal" data-target="#modal-filter" onclick="SearchFilterModal('modal-filter',frm);"> {% endcomment %}
+        <a class="filter-icon-button" data-toggle="modal" data-target="#modal-filter" id="filterBtn">
+            <img src="/static/images/home/icon_filter_off.png" alt="필터 아이콘">
+        </a>
+        <input type="text" placeholder="음식점 이름을 검색해보세요">
+        <button onclick="searchData();">검색</button>
+    </div>
+</header>
+<div class="home-container">
+<div class="drag-slider">
+  <button class="slide-btn prev">&lt;</button>
+  <div class="slider-container">
+    <div class="slider-track">
+        {% for loc in locationDetail %}
+        <div class="slide-item">
+            <a class="slide-item" href="/restaurants/reslist?locno={{ loc.location.locno }}&locdno={{ loc.locdno }}">
+                {{ loc.locd_nm }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+  </div>
+  <button class="slide-btn next">&gt;</button>
+</div>
+<div class="food-container">
+    <ul class="food-grid">
+        {% for food in foodType %}
+        <li>
+            <a href="/restaurants/reslist?ftypeno={{ food.ftypeno }}" class="food-item">
+                <div class="food-img">
+                    <img src="{{ food.img_url_main }}" alt="{{ food.ftype }}">
+                </div>
+                <span class="food-name">{{ food.ftype }}</span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</div>
+<!-- Modal Body -->
+<form id="searchFrm" name="searchFrm">
+    <div id="modal-filter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTitle"></div>
+</form>
+{% endblock body %}

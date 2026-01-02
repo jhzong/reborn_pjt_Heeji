@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% comment %} css 작업은 여기서 하세요!! {% endcomment %}
+{% block css %}
+<link rel='stylesheet' type="text/css" href="/static/css/magazine.css">
+{% endblock css %}
+
+{% comment %} script 작업은 여기서 하세요!! {% endcomment %}
+{% block script %}
+<link rel='stylesheet' href="/static/js/magazine.js">
+{% endblock script %}
+
+{% comment %} body 작업은 여기서 하세요!! {% endcomment %}
+{% block body %}
+
+    <div class='magazine-header_bg'>
+        <div class='magazine-header'>
+            <div class='search-title'>
+                Reborn 매거진
+            </div>
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon"><img src='/static/images/magazine/search_icon.png'></span>
+                    <input type="text" placeholder="매거진 내에서 검색해보세요."/>
+                </div>
+                <button class="search-btn">검색</button>
+            </div>
+        </div>
+    </div>
+
+    <div class='magazine-body'>
+
+        <div class='magazine-category'>
+            <select>
+                <option>전체</option>
+                {% for code in qs_code %}
+                    <option value="{{code.mtype}}">{{code.mtype_desc}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <ul>
+
+            {% for l in list %}
+            <li class='magazine_item'>
+                <a href='#'>
+                    <figure>
+                        <div><img src='/media/{{l.mfile}}'></div>
+                        <figcaption>
+                            <span class='card-category'>{{l.magazine_code.mtype_desc}}</span>
+                            <h4 class='card-title'>{{l.mtitle}}</h4>
+                            <p>
+                            {{l.mcontent}}
+                            </p>
+                            <span class='card-date'>{{l.mdate|date:'Y-m-d H:i'}}</span>
+                        </figcaption>
+                    </figure>
+                </a>
+            </li>
+            {% endfor %}
+
+            <!-- 나머지 빈공란 출력 -->
+            {% if etc_count > 0 %}
+            {% for l in "x"|rjust:etc_count %}
+                <li class='magazine_item'></li>
+            {% endfor %}
+            {% endif %}
+
+            <!--
+            <li class='magazine_item'>
+                <a href='#'>
+                    <figure>
+                        <div><img src='/media/magazine_1.jpg'></div>
+                        <figcaption>
+                            <span class='card-category'>레스토랑 & 카페 </span>
+                            <h4 class='card-title'>동네의 결이 이어지는 길 - 성북천 미식 산책</h4>
+                            <p>
+                                신설동역부터 보문역, 성신여대입구역, 한성대입구역까지 이어지는 성북천은 오래된 노포부터 힙한 카페거리를 아우르며 시간이 켜켜이 축적된 터전이다. 다양한 연령대가 자연스럽게 공존하고, 물길을 따라 크고 작은 이야기가 흐르는 곳. 성북천의 맛집을 소개한다.
+                            </p>
+                            <span class='card-date'>2025.12.23</span>
+                        </figcaption>
+                    </figure>
+                </a>
+            </li>
+            -->
+        </ul>         
+
+    </div>
+
+    <!-- 페이징 -->
+     
+    <div class="btnAreaList">
+        <div class="allPageMoving1">
+            <a href="#" class="n"><img src="/static/images/common/btn_pre2.gif" alt="처음으로"/></a><a href="#" class="pre"><img src="/static/images/common/btn_pre1.gif" alt="앞페이지로"/></a>
+            <strong>1</strong>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#" class="next"><img src="/static/images/common/btn_next1.gif" alt="뒤페이지로"/></a><a href="#" class="n"><img src="/static/images/common/btn_next2.gif" alt="마지막페이지로"/></a>
+        </div>
+    </div>  
+    
+{% endblock body %}
+
+

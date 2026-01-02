@@ -1,0 +1,363 @@
+/* 배경을 어둡게 만드는 가상 요소 */
+body.modal-open::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 0.5가 어두운 정도입니다 */
+    z-index: 1040; /* 팝업(1050)보다 낮게 설정 */
+}
+
+/* 팝업이 떴을 때 스크롤 방지 */
+body.modal-open {
+    overflow: hidden;
+}
+
+.modal {
+    /*background: rgba(0, 0, 0, 0.8);*/ /* 어두운 배경 오버레이 */
+    position: fixed;
+    /* 1. 화면의 정중앙 지점으로 이동 */
+    top: 50%;
+    left: 50%;
+    
+    /* 2. 모달 자신의 크기 절반만큼 왼쪽/위쪽으로 다시 이동 (진정한 중앙 정렬) */
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* 👈 이 속성 덕분에 다른 요소 위에 보입니다 */
+
+    /* 👇 추가된 반응형 대응 코드 */
+    width: 90%;            /* 모바일 화면에서 화면 너비의 90%만 차지 */
+    max-width: 740px;      /* 데스크톱 등 큰 화면에서는 최대 740px로 제한 */
+    max-height: 95vh;      /* 모바일 화면 높이의 95%를 넘지 않도록 설정 (핵심) */
+    
+    outline: none;
+    /* display: none; */ /* JS로 제어될 것이므로 주석 처리 */
+}
+
+@media (min-width: 768px) {
+    .modal-dialog.modal-md {
+        width: 740px; /* 데스크톱: 중앙 정렬된 너비 */
+        max-width: 740px;      /* 최대 너비 제한 */
+    }
+}
+
+.modal-filter{
+    height: 100%;
+}
+
+.modal-content {
+    width: 100%;
+    background-color: #fff !important; 
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 헤더, 바디, 푸터 --- */
+.modal-header {
+    display: flex;                /* Flexbox 활성화 */
+    justify-content: space-between; /* 제목은 왼쪽 끝, 버튼은 오른쪽 끝으로 정렬 */
+    align-items: center;          /* 세로선 기준 중앙 정렬 */
+    padding: 15px 30px;           /* 패딩 유지 */
+    border-bottom: none;
+}
+
+.modal-body{
+    height: calc(60vh - 20px);
+    /* 내용이 넘칠 경우 스크롤 허용 */
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex; /* 내부 요소를 가로로 정렬 */
+    justify-content: space-between; /* 왼쪽/오른쪽 끝으로 분리 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 15px 20px; /* 푸터 내부 여백 (상하 15px, 좌우 20px) */
+    border-top: 1px solid #eee; /* 상단 구분선 */
+}
+
+.modal-footer button {
+    display: flex; /* Flexbox 레이아웃 활성화 */
+    justify-content: space-between; /* 중요: 양쪽 끝 정렬 (왼쪽 끝 vs 오른쪽 끝) */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 10px 15px; /* 내부 여백 설정 */
+}
+
+/* "전체 해제" 버튼 (보조 액션) */
+.btn-clear-all {
+    /* 버튼처럼 보이지 않게 텍스트 링크 스타일로 변경 */
+    background: none;
+    border: none;
+    color: #666; /* 이미지 속 텍스트 색상 */
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline; /* 밑줄 추가 */
+}
+
+/* "필터 적용" 버튼 (주요 액션) */
+.btn-apply-filter {
+    background-color: #111; 
+    color: #fff; 
+    border: none;
+    padding: 10px 20px; 
+    border-radius: 6px;
+    cursor: pointer;
+    height: 40px;
+}
+
+@media (min-width: 768px) {
+    /* 데스크톱 버전의 더 넓은 패딩 (이미지 기준) */
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}
+
+.modal-title {
+    font-size: 20px;
+    color: #1b47b3;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0; /* 제목 기본 margin 제거 */
+}
+
+/* 2. 닫기 버튼 스타일 재정의 */
+.btn-popup-close {
+    /* .pull-right 덕분에 자동으로 오른쪽에 위치합니다. */
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+    font-size: 30px; /* '×' 심볼 크기 */
+    color: #999; /* 기본 회색 */
+    opacity: 0.8;
+    margin-top: -3px; /* 제목과 높이 맞추기 위한 미세 조정 */
+}
+
+.btn-popup-close:hover,
+.btn-popup-close:focus {
+    color: #333;
+    opacity: 1;
+    outline: none;
+}
+
+/* --- 필터 그룹 섹션 --- */
+.filter-desc {
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 14px;
+}
+
+.filter-desc a u {
+    color: #1b47b3;
+    text-decoration: underline;
+}
+
+.title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.title-bar .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+}
+
+.modal-body hr {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border-top: 1px solid #eeeeee;
+}
+
+/* --- 입력 필드 및 검색 버튼 --- */
+.form-control {
+    max-width: 120px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* --- 체크박스 버튼 스타일 (핵심) --- */
+/* .multiple-buttons는 항목들을 묶어주는 컨테이너 */
+.multiple-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* 버튼 사이 간격 */
+}
+
+/* 실제 체크박스 숨기기 */
+.checkbox-button input[type="checkbox"] {
+    display: none;
+}
+
+/* 라벨을 버튼처럼 스타일링 */
+.checkbox-button label {
+    display: block;
+    padding: 8px 15px;
+    border: 1px solid #eeeeee;
+    background-color: #fafafa;
+    border-radius: 20px; /* 둥근 모양 */
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* 체크되었을 때 활성화된 버튼 스타일 */
+.checkbox-button input[type="checkbox"]:checked + label {
+    background-color: #1b47b3;
+    color: #fff;
+    border-color: #1b47b3;
+}
+
+/* --- 평균 가격대 및 영업시간 섹션 --- */
+/* 입력 필드 컨테이너 정렬 */
+.price-range-inputs,
+.time-range-inputs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* 입력 필드 내 통화 기호(₩) 및 시간 아이콘 스타일 */
+.price-range-inputs .form-control,
+.time-range-inputs .form-control {
+    padding-left: 25px; /* 기호 공간 확보 */
+}
+
+.price-range-inputs span:first-child {
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    pointer-events: none; /* 클릭 방지 */
+}
+.time-range-inputs span:first-child {
+    left: 12px;
+    top: 50%;
+    color: #555;
+    pointer-events: none; /* 클릭 방지 */
+}
+
+.weekdays {
+    justify-content: center;
+}
+
+/* 시간 입력 필드 스타일 조정 */
+.time-range-inputs input.form-control {
+    width: 80px;
+    text-align: center; /* 시간 중앙 정렬 */
+}
+
+.time-range-inputs span:nth-child(2) {
+    /* 가운데 하이픈 (-) 스타일 */
+    position: static;
+    transform: none;
+}
+
+/* 해 아이콘 (☀) 색상 */
+.time-range-inputs .sun-icon {
+    color: #f7b733;
+    font-size: 18px;
+}
+
+/* 24:00 텍스트 스타일 */
+.filter-group .time-range-inputs + div {
+    text-align: center;
+    margin-top: 10px;
+    color: #999;
+}
+
+/* 시간 0~24시로 사용한다면 나중에 주석처리 */
+.time-slider-wrapper {
+    position: relative;
+    margin-top: 20px;
+}
+
+.time-markers {
+    position: absolute;
+    top: 100%;          /* 슬라이더 바로 아래 */
+    left: 0;
+    width: 100%;
+    height: 30px;
+    pointer-events: none; /* 드래그 방해 방지 */
+}
+
+.marker {
+    position: absolute;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.marker .line {
+    width: 1px;
+    height: 10px;
+    background: #999;
+    margin: 0 auto;
+}
+
+.marker .label {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+    white-space: nowrap;
+}
+/* 시간 0~24시로 사용한다면 나중에 주석처리 */
+
+/* 지역검색 'main-filters' 사용 */
+.main-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* 'region-label' 대신 'main-filter-label' 사용 */
+.main-filter-label span {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 체크 되었을 때 스타일 적용 */
+.main-filter-label input[type="checkbox"]:checked + span {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* 실제 input[type="checkbox"] 숨기기 */
+.main-filter-label input[type="checkbox"] {
+    display: none;
+    margin-left: 10px;
+}
+
+.detail-group {
+    /* 하위 체크박스들을 한 줄에 나열하고 간격 설정 */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 10px; /* 세로/가로 간격 설정 */
+    padding-top: 10px; /* 상단 마진 */
+}
+
+.detail-checkbox-container {
+    width: 100%; /* 이 줄을 추가하여 영역 너비를 100%로 고정 */
+}
+
+.hidden {
+    display: none !important; 
+}
