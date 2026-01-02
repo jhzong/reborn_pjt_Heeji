@@ -7,23 +7,58 @@
     <title>{% block title %}식당추천사이트{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="/static/css/common.css">
     <link rel="stylesheet" type="text/css" href="/static/css/common_media.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!--https://ko.wix.com/website/templates-->
-    {% block css %}{% endblock %}
-    {% block style %}
-    
+    {% block css %}
+    <style>
+    /* 토스트 알림창 디자인 커스텀 */
+    .swal2-toast {
+        background-color: #ffffff !important;
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    }
+    .swal2-title {
+        color: #1e293b !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+</style>
     {% endblock %}
+    {% block style %}{% endblock %}
     <script src="/static/js/jquery-3.6.0.min.js"></script>
     <!-- 날짜 포맷함수 -->
     {% comment %} <script type="text/javascript" src="/static/js/moment.min.js"></script> {% endcomment %}
     <script src="/static/js/common.js"></script>
     {% block script %}{% endblock %}
 </head>
+
 <!-- JavaScript 추가 -->
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', function() {
         const hamburgerToggle = document.getElementById('hamburger-toggle');
         const navMenu = document.getElementById('nav-menu');
         const mainContent = document.querySelector('main.content');
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        {% if messages %}
+            {% for message in messages %}
+                Toast.fire({
+                    icon: "{{ message.tags }}", 
+                    title: "{{ message }}"
+                });
+            {% endfor %}
+        {% endif %}
 
         // 메뉴를 닫고 상태를 초기화하는 함수
         const closeMenu = () => {
@@ -68,7 +103,9 @@
 </script>
 <body>
     <!-- 헤더 메뉴 -->
-    {% include "header.html" %}
+    {% if request.session.user_id %}
+        {% include "navbar.html" %}  {% else %}
+        {% include "header.html" %}  {% endif %}
 
     <!-- 메인 콘텐츠 영역 (푸터를 하단에 고정하기 위해 필요) -->
     <main class="content">

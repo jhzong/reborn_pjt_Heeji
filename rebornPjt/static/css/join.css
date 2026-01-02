@@ -31,6 +31,25 @@
     width: 320px;
     text-align: center;
     }
+    
+    .box p {
+        font-size: 13px;
+        font-weight: 400;
+        color: #636363;
+        
+        margin-bottom: 8px; 
+    }
+    .box pp {
+        font-size: 13px;
+        font-weight: 400;
+        color: #636363;
+        
+        margin-bottom: 30px; 
+    }
+    .box ps {
+        color: #035FE0;
+        font-weight: 700;
+    }
     h1 {/*타이틀 박스*/
         height:60px;
         border-bottom: 1px solid #ccc;/*타이틀박스 아랫선*/
@@ -50,16 +69,15 @@
         color: #035fe0;
     }
     .none{/*공백*/
-       height:30px; 
+       height:67px; 
     }
-    form{
+    .box{
         padding-left: 47px;
     }
     .input-box {
         width: 90%;
         padding: 12px;
-        margin: 5px;
-        margin-bottom: 4px;
+        margin: 5px 0;
         border: 1px solid #ccc;
         font-size: 14px;
         font-weight: 400;
@@ -82,10 +100,14 @@
         cursor: pointer;
         border: none;
         border-radius: 0;
+        transform: translateY(-2px);
     }
-    .btn-login {
+    .btn.btn-join {
+        width: 245.7px;
+        margin-top:27px;
         background-color: #035fe0;
         color: #fafafa;
+        transform: translateY(-2px);
     }
     .btn-signup {
         background-color: #c5c5c59f;

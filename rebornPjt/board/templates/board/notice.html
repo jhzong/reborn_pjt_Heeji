@@ -1,13 +1,16 @@
 {% extends "base.html" %}
-{% load static %} {% block css %}
-<link rel='stylesheet' href="{% static 'css/blist.css' %}">
+
+{% block css %}
+<link rel='stylesheet' href="/static/css/notice.css">
 {% endblock css %}
 
 {% block script %}
-<script src="{% static 'js/blist.js' %}" defer></script>
+<script src="/static/js/notice.js" defer></script>
 {% endblock script %}
 
 {% block body %}
+
+
 <div class="board-wrapper">
     <div class="top-hero"></div>
 
@@ -16,8 +19,8 @@
             <div class="header-left">
                 <h1 class="title">블루리본 커뮤니티</h1>
                 <nav class="tab-menu">
-                    <a href="/board/notice/">공지사항 및 문의</a>
-                    <a href="/board/blist/" class="active">게시판</a>
+                    <a href="/board/notice/" class="active">공지사항 및 문의</a>
+                    <a href="/board/blist/" >게시판</a>
                 </nav>
             </div>
             <div class="header-right">
@@ -42,7 +45,7 @@
                 {% endif %}
                 <a href="#" class="post-title">{{ post.title }}</a>
                 <div class="post-meta">
-                    by {{ post.author }} | {{ post.created_at|date:"Y.m.d" }} | 조회수 {{ post.views }}
+                    by {{ post.author }} | {{ post.created_at|date:"Y.03.07" }} | 조회수 {{ post.views }}
                 </div>
             </div>
             {% empty %}
