@@ -14,7 +14,7 @@
     <div class="main-container">
         <div class="board-header">
             <div class="header-left">
-                <h1 class="title">블루리본 커뮤니티</h1>
+                <h1 class="title"><strong>Reborn</strong> 커뮤니티</h1>
                 <nav class="tab-menu">
                     <a href="/board/notice/">공지사항 및 문의</a>
                     <a href="/board/blist/" class="active">게시판</a>
@@ -28,8 +28,14 @@
             </div>
         </div>
 
-        <div class="action-row">
-            <button class="btn-write" onclick="location.href='/board/bwrite/'">글쓰기</button>
+        <div class="action-row" style="text-align: right; margin-top: 20px;">
+            {% if request.session.login_user %}
+                <button type="button" class="btn-write" onclick="location.href='/board/bwrite/'">
+                    글쓰기
+                </button>
+            {% else %}
+                <p style="font-size: 14px; color: #999;">로그인 후 게시글을 작성하실 수 있습니다.</p>
+            {% endif %}
         </div>
 
         <div class="post-list">
@@ -40,7 +46,7 @@
                     <span class="tag">서초동맛집</span><span class="tag">블루리본</span>
                 </div>
                 {% endif %}
-                <a href="#" class="post-title">{{ post.title }}</a>
+                <a href="{% url 'board:bview' post.id %}" class="post-title">{{ post.title }}</a>
                 <div class="post-meta">
                     by {{ post.author }} | {{ post.created_at|date:"Y.m.d" }} | 조회수 {{ post.views }}
                 </div>

@@ -17,7 +17,7 @@
     <div class="main-container">
         <div class="board-header">
             <div class="header-left">
-                <h1 class="title">블루리본 커뮤니티</h1>
+                <h1 class="title"><strong>Reborn</strong> 커뮤니티</h1>
                 <nav class="tab-menu">
                     <a href="/board/notice/" class="active">공지사항 및 문의</a>
                     <a href="/board/blist/" >게시판</a>
@@ -25,14 +25,16 @@
             </div>
             <div class="header-right">
                 <div class="search-box">
-                    <input type="text" placeholder="독자 게시판 내에서 검색해보세요.">
+                    <input type="text" placeholder="공지사항 및 문의 내용을 찾아보세요.">
                     <button type="button">검색</button>
                 </div>
             </div>
         </div>
 
         <div class="action-row">
-            <button class="btn-write" onclick="location.href='/board/bwrite/'">글쓰기</button>
+            <button class="btn-write" onclick="checkLoginAndWrite('{{ user.is_authenticated|yesno:'true,false' }}')">
+                문의하기
+            </button>
         </div>
 
         <div class="post-list">

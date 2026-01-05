@@ -4,6 +4,7 @@ from .models import MyUser # 우리가 만든 회원 창고(모델)를 가져온
 from django.contrib.auth.hashers import make_password # 비밀번호를 암호화해주는 도구
 from django.contrib.auth.hashers import check_password # 입력한 비번과 암호화된 비번이 맞는지 확인하는 도구
 from django.contrib import messages # 화면에 "성공", "오류" 메시지를 잠시 띄워주는 도구
+from django.contrib.auth import login as auth_login # 이름 중복 방지
 from .models import MyUser
 
 #-----------------------------로그인 페이지------------------------------------
@@ -27,6 +28,18 @@ def login(request):
         # 회원이 존재하고(user) + 비밀번호도 맞는지(check_password) 확인
         if user and check_password(user_pw, user.mem_pw):
             print(f"로그인 성공!!! 사용자 이름: {user.mem_nm}")
+            
+            
+            # last_login 필드가 없어도 에러가 나지 않도록 속성 설정
+            user.last_login = None 
+            
+            # auth_login을 호출하되, 내부적으로 save()가 호출될 때 
+            # last_login 필드를 찾지 않도록 처리하는 대신 
+            # 아래처럼 모델 인스턴스에 속성만 부여한 뒤 진행합니다.
+            # [중요] Django 표준 로그인 처리를 먼저 
+            # 이 코드가 실행되어야 @login_required가 "아, 이 사람 로그인했구나!"라고 인식
+            auth_login(request, user)
+            
             # 로그인 성공 시 세션에 유저 정보 저장 / 서버 세션(비밀 메모장)에 로그인했다는 증거
             request.session['login_user'] = user.mem_id
             request.session['user_id'] = user.mem_id
@@ -37,6 +50,8 @@ def login(request):
             messages.error(request, "아이디 또는 비밀번호가 올바르지 않습니다.")
             # 다시 로그인 페이지를 보여주되, 입력했던 아이디는 남겨줘서 편리하게
             return render(request, 'member/login.html', {'id': user_id})
+        
+        
 
     # GET 방식(처음 페이지 접속)일 때 실행    
     return render(request, 'member/login.html')

@@ -24,6 +24,9 @@ class MyUser(models.Model):
     
     # 5. 가입일 (자동 생성)
     cr_dt = models.DateTimeField(auto_now_add=True)
+    
+    # 아래 한 줄을 추가해 주세요 (null=True여야 기존 데이터와 충돌이 없습니다)
+    last_login = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.mem_id},{self.mem_nm},{self.email},{self.nick_nm}'
