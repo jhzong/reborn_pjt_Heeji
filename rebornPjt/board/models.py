@@ -38,6 +38,10 @@ class Comment(models.Model):
     author = models.CharField(max_length=50)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    # ⭐ 대댓글 핵심: 'self'는 나(Comment)를 다시 가리킨다는 뜻이에요. 
+    # null=True는 일반 댓글(엄마 없는 첫 댓글)도 가능하게 해줍니다.
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
     def __str__(self):
         return f"{self.author}님의 댓글"

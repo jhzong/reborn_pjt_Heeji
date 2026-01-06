@@ -97,15 +97,23 @@ body {
 }
 
 /* 글쓰기 버튼 */
-.btn-write { 
-    background: #000; 
-    color: #fff; 
-    padding: 8px 20px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    float: right; 
-    margin-bottom: 20px; 
-    border: none; 
+.btn-write {
+    background-color: #526379; /* 구글 스타일의 세련된 블루 또는 메인 포인트 컬러 */
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px; /* 완전히 둥근 모양으로 변경 */
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.2); /* 은은한 푸른빛 그림자 */
+}
+
+.btn-write:hover {
+    background-color: #0a3977;
+    transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
 }
 
 /* ============================================================
@@ -130,11 +138,20 @@ body {
     font-size: 18px; 
 }
 
-.post-meta { 
-    font-size: 13px; 
-    color: #aaa; 
+.post-meta {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 항목 간 일정한 간격 유지 */
 }
 
+/* 하트 색상이 너무 튀지 않게 조정하고 싶다면 */
+.post-meta span {
+    display: inline-flex;
+    align-items: center;
+}
 /* 태그 스타일 */
 .tag { 
     color: #00acc1; 
@@ -148,11 +165,41 @@ body {
 /* ============================================================
    7. 페이지네이션 (하단 숫자)
    ============================================================ */
-.pagination { 
-    display: flex; 
-    justify-content: center; 
-    gap: 8px; 
-    margin-top: 40px; 
+.pagination {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pagination a {
+    text-decoration: none;
+    color: #5f6368;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* 숫자 배경을 동그랗게 */
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #f1f3f4;
+    color: #202124;
+}
+
+.pagination a.active {
+    background-color: #526379; /* 글쓰기 버튼과 톤 맞춤 */
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+}
+
+.pagination .arrow {
+    font-weight: bold;
+    color: #1a73e8;
 }
 
 .num, .arrow { 
