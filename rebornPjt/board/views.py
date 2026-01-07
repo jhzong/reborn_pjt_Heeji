@@ -10,7 +10,8 @@ from django.db.models import Q # 검색 조건을 위해 필요합니다
 def blist(request):
     # 1. 모든 게시글을 가져온다. (변수명을 posts로 통일)
     # 모든 게시글을 최신순(ID 역순)으로 가져옵니다.
-    all_posts = Post.objects.all().order_by('-created_at') 
+    # 일반 게시글('general')만 가져온다.
+    all_posts = Post.objects.filter(category='general').order_by('-created_at')
     # 검색어 가져오기
     search_kw = request.GET.get('search', '') # name="search"로 보낸 값
     # 검색어가 있다면 제목에서 검색
@@ -37,10 +38,6 @@ def blist(request):
         'search_kw': search_kw  # 검색창에 내가 쓴 글자를 유지시키기 위해 전달
     })
 
-def notice(request):
-    # 만약 DB에 '공지사항' 카테고리가 따로 있다면 필터링해서 가져올 수도 있다.
-    # 지금은 단순히 notice.html을 보여주는 코드로 작성
-    return render(request, 'board/notice.html')
 
 
 
@@ -69,7 +66,8 @@ def bwrite(request):
         Post.objects.create(
             title=title,
             content=content,
-            author=writer_nm
+            author=writer_nm,
+            category='general'  # 일반 게시판용 태그
             # category=category,
             # writer_id=writer_id,
             # writer_nm=writer_nm,
@@ -104,10 +102,16 @@ def bview(request, bno):
         
 
     # 이전글 (더 최신글): 현재보다 작성 시간이 큰(미래) 글 중 가장 오래된 것
-    prev_post = Post.objects.filter(created_at__gt=post.created_at).order_by('created_at').first()
+    prev_post = Post.objects.filter(
+        category=post.category, # ⭐ 현재 글과 같은 카테고리만!
+        created_at__gt=post.created_at
+    ).order_by('created_at').first()
 
     # 다음글 (더 예전글): 현재보다 작성 시간이 작은(과거) 글 중 가장 최신 것
-    next_post = Post.objects.filter(created_at__lt=post.created_at).order_by('-created_at').first()
+    next_post = Post.objects.filter(
+        category=post.category, # ⭐ 현재 글과 같은 카테고리만!
+        created_at__lt=post.created_at
+    ).order_by('-created_at').first()
     
     # 해당 게시글에 달린 댓글들 가져오기
     comments = post.comments.all().order_by('-created_at')
@@ -120,7 +124,13 @@ def bview(request, bno):
     }
 
     
-    return render(request, 'board/bview.html', context)
+    # 4. 카테고리에 따른 템플릿 분기 처리
+    if post.category == 'notice':
+        return render(request, 'board/nview.html', context) # 공지사항용
+    else:
+        return render(request, 'board/bview.html', context)  # 일반 게시판용
+
+# -----------------------------------------------------------------------------------------------
 
 
 def bupdate(request, bno):
@@ -150,6 +160,9 @@ def bdelete(request, bno):
     return redirect('board:bview', bno=bno)
 
 
+# -----------------------------------------------------------------------------------------------
+
+
 # 댓글 작성 로직 (대댓글 포함)
 def comment_write(request, bno):
     if request.method == "POST":
@@ -166,8 +179,6 @@ def comment_write(request, bno):
             
     return redirect('board:bview', bno=bno)
 
-
-
 # 댓글 삭제
 def comment_delete(request, bno, cno):
     comment = get_object_or_404(Comment, id=cno)
@@ -176,7 +187,6 @@ def comment_delete(request, bno, cno):
     return redirect('board:bview', bno=bno)
 
 # 댓글 수정 (간단 버전)
-# 댓글 수정해주는 기계
 def comment_update(request, bno, cno):
     if request.method == "POST":
         # 1. 수정할 댓글을 찾아요
@@ -193,12 +203,7 @@ def comment_update(request, bno, cno):
 
 
 
-
-
-
-
-
-
+# -----------------------------------------------------------------------------------------------
 
 
 # 좋아요 로직
@@ -233,3 +238,76 @@ def post_like(request, bno):
     request.session.modified = True # 세션이 변경되었음을 명시적으로 알림
 
     return redirect('board:bview', bno=bno)
+
+
+
+
+# -----------------------------------------------------------------------------------------------
+#                                     공지사항 페이지
+# -----------------------------------------------------------------------------------------------
+
+
+def noticelist(request):
+    # 1. 모든 게시글을 가져온다. (변수명을 posts로 통일)
+    # 모든 게시글을 최신순(ID 역순)으로 가져옵니다.
+    all_posts = Post.objects.filter(category='notice').order_by('-created_at')
+    # 검색어 가져오기
+    search_kw = request.GET.get('search', '') # name="search"로 보낸 값
+    # 검색어가 있다면 제목에서 검색
+    if search_kw:
+        all_posts = all_posts.filter(
+            Q(title__icontains=search_kw) | # 제목 검색
+            Q(content__icontains=search_kw)   # 내용 검색도 추가하면 더 편리해요!
+        ).distinct()
+    
+    # 2. Paginator 설정 (첫 번째 인자에 위에서 선언한 변수 posts를 넣어야 함)
+    paginator = Paginator(all_posts, 10) # 10개씩 자르기
+    
+    # 3. 현재 페이지 번호를 가져오고 해당 페이지 객체를 생성
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # 4. 템플릿으로 데이터를 보냄
+    # (page_obj를 'posts'라는 이름으로 전달하면 HTML의 {% for post in posts %}가 작동)
+    # DB에서 모든 글을 가져와서 최신순으로 정렬
+    posts = paginator.get_page(page_number)
+    # all_posts = Board.objects.all().order_by('-id')
+    return render(request, 'board/noticelist.html', {
+        'posts': page_obj,      # HTML의 {% for post in posts %} 부분
+        'search_kw': search_kw  # 검색창에 내가 쓴 글자를 유지시키기 위해 전달
+    })
+
+def nwrite(request):
+    # 문지기 대신 우리가 직접 세션 장부를 확인합니다.
+    if not request.session.get('login_user'):
+        # 장부에 이름이 없으면? 로그인 페이지로 보냅니다.
+        return redirect('member:login')
+
+    if request.method == "POST":
+        # 폼에서 넘겨준 데이터 받기
+        title = request.POST.get('title')    # 제목
+        content = request.POST.get('content') # 내용
+        # category = request.POST.get('category') # 주제 선택
+        # author = request.session.get('user_nm') # 세션에 저장된 닉네임 사용
+        
+        # 데이터가 잘 들어왔는지 확인용 (터미널에 찍힘)
+        print(f"가져온 제목: {title}")
+        
+        # 세션에서 작성자 정보 가져오기
+        # writer_id = request.session.get('login_user')
+        writer_nm = request.session.get('user_nm')
+
+        # DB에 저장
+        Post.objects.create(
+            title=title,
+            content=content,
+            author=writer_nm,
+            category='notice'
+            # category=category,
+            # writer_id=writer_id,
+            # writer_nm=writer_nm,
+            # write_date=timezone.now() # 현재 시간 저장
+        )
+        return redirect('board:noticelist') # 저장 후 다시 리스트로 이동
+
+    return render(request, 'board/nwrite.html')

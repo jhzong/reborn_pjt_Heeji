@@ -24,6 +24,9 @@ class Post(models.Model):
     # 실제로는 User 모델과 연결해야 하지만, 현재 세션 방식을 쓰시므로 
     # 간편하게 숫자만 카운트하는 방식으로 먼저 구현하거나, 아이디 리스트를 저장할 수 있습니다.
     likes = models.PositiveIntegerField(default=0)
+    
+    # ⭐ 카테고리 필드 추가: general(일반), notice(공지/문의) 구분용
+    category = models.CharField(max_length=20, default='general')
 
     # 이 함수는 관리자 페이지(Admin)나 터미널에서 데이터를 조회할 때,
     # 글 번호(Post object) 대신 실제 '글 제목'이 보이게 해주는 역할

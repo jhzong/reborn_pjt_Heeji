@@ -13,6 +13,7 @@ urlpatterns = [
     path('bview/<int:bno>/comment/<int:cno>/update/', views.comment_update, name='comment_update'),
     path('bview/<int:bno>/like/', views.post_like, name='post_like'),
     
-    path('notice/', views.notice, name='notice'),
+    path('noticelist/', views.noticelist, name='noticelist'),
+    path('nwrite/', views.nwrite, name='nwrite'),
     
 ]
