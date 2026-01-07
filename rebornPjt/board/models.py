@@ -27,6 +27,9 @@ class Post(models.Model):
     
     # ⭐ 카테고리 필드 추가: general(일반), notice(공지/문의) 구분용
     category = models.CharField(max_length=20, default='general')
+    
+    # 맛집 세부 주제를 저장할 필드 추가
+    topic = models.CharField(max_length=20, null=True, blank=True)
 
     # 이 함수는 관리자 페이지(Admin)나 터미널에서 데이터를 조회할 때,
     # 글 번호(Post object) 대신 실제 '글 제목'이 보이게 해주는 역할
@@ -41,6 +44,7 @@ class Comment(models.Model):
     author = models.CharField(max_length=50)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='comments/%Y/%m/%d/', null=True, blank=True)
     
     # ⭐ 대댓글 핵심: 'self'는 나(Comment)를 다시 가리킨다는 뜻이에요. 
     # null=True는 일반 댓글(엄마 없는 첫 댓글)도 가능하게 해줍니다.
@@ -48,3 +52,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.author}님의 댓글"
+    
+class PostImage(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='board/multi/', null=True, blank=True)

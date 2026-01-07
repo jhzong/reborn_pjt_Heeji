@@ -14,4 +14,5 @@ urlpatterns = [
 ]
 
 # 파일업로드시 url구성, urlpatterns에 추가 설정
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

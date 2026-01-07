@@ -14,12 +14,13 @@
 {% block body %}
 <div class="inquiry-container">
     <header class="inquiry-header">
-        <h1 class="title">문의 작성</h1>
+        <h1 class="title">게시글 작성</h1>
         <p class="subtitle">자유롭게 소중한 의견을 남겨주세요.</p>
     </header>
 
-    <form id="inquiry-form" class="inquiry-form" method="POST">
+    <form id="inquiry-form" class="inquiry-form" method="POST" action="{% url 'board:nwrite' %}" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="hidden" name="category" value="notice">
         <div class="form-grid">
             <div class="form-group">
                 <label for="user_name">성명 <span class="required">*</span></label>

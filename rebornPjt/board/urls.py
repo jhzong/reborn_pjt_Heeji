@@ -16,4 +16,6 @@ urlpatterns = [
     path('noticelist/', views.noticelist, name='noticelist'),
     path('nwrite/', views.nwrite, name='nwrite'),
     
+    path('map/', views.map, name='map'),
+    path('mwrite/', views.mwrite, name='mwrite'),
 ]
