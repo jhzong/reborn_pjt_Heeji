@@ -68,7 +68,7 @@ body {
 /* 선택된 탭 강조 (블루리본 시그니처 컬러) */
 .tab-menu a.active { 
     color: #003366; 
-    border-bottom: 3px solid #003366; 
+    border-bottom: 3px solid #007BFF; 
 }
 
 /* ============================================================

@@ -80,55 +80,58 @@ def bwrite(request):
 
 # 게시글 상세보기
 def bview(request, bno):
-    # 1. bno(ID)에 해당하는 글을 가져옵니다. (없으면 404 에러)
-    from django.shortcuts import get_object_or_404
+    # 1. bno(ID)에 해당하는 글을 가져옵니다.
     post = get_object_or_404(Post, id=bno)
     print(f"--- 현재 카테고리: [{post.category}] ---")
+    
     # 2. 조회수 중복 방지 로직 (세션 활용)
-    # 세션에서 'viewed_posts'라는 이름의 리스트를 가져옵니다. 없으면 빈 리스트([]) 생성.
     viewed_posts = request.session.get('viewed_posts', [])
 
     if bno not in viewed_posts:
-        # 이 게시글을 처음 보는 경우에만 조회수 +1
         post.views += 1
         post.save()
-        
-        # 주머니(리스트)에 현재 게시글 번호를 추가
         viewed_posts.append(bno)
-        # 업데이트된 리스트를 다시 세션에 저장
         request.session['viewed_posts'] = viewed_posts
-        # 세션 데이터가 변경되었음을 장고에 알림
         request.session.modified = True
         
+    # 3. 카테고리별 글 목록 미리보기 로직 추가
+    # 현재 게시글과 같은 카테고리의 모든 글을 최신순으로 가져옵니다.
+    all_category_posts = Post.objects.filter(category=post.category).order_by('-created_at')
+    
+    # Paginator 세팅: 한 페이지에 5개씩 보여줌
+    paginator = Paginator(all_category_posts, 5)
+    page_number = request.GET.get('page', 1) # URL에 page 파라미터가 없으면 1페이지
+    posts_in_category = paginator.get_page(page_number)
 
-    # 이전글 (더 최신글): 현재보다 작성 시간이 큰(미래) 글 중 가장 오래된 것
+    # 이전글 (더 최신글)
     prev_post = Post.objects.filter(
-        category=post.category, # ⭐ 현재 글과 같은 카테고리만!
+        category=post.category,
         created_at__gt=post.created_at
     ).order_by('created_at').first()
 
-    # 다음글 (더 예전글): 현재보다 작성 시간이 작은(과거) 글 중 가장 최신 것
+    # 다음글 (더 예전글)
     next_post = Post.objects.filter(
-        category=post.category, # ⭐ 현재 글과 같은 카테고리만!
+        category=post.category,
         created_at__lt=post.created_at
     ).order_by('-created_at').first()
     
     # 해당 게시글에 달린 댓글들 가져오기
     comments = post.comments.all().order_by('-created_at')
     
+    # context에 posts_in_category 추가
     context = {
         'post': post,
         'prev_post': prev_post,
         'next_post': next_post,
         'comments': comments,
+        'posts_in_category': posts_in_category, # 템플릿에서 리스트 출력용
     }
 
-    
     # 4. 카테고리에 따른 템플릿 분기 처리
     if post.category == 'notice':
         return render(request, 'board/nview.html', context)
     elif post.category == 'map':
-        return render(request, 'board/mview.html', context) # 맛집 전용 상세페이지
+        return render(request, 'board/mview.html', context)
     else:
         return render(request, 'board/bview.html', context)
 # -----------------------------------------------------------------------------------------------

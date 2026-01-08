@@ -14,7 +14,7 @@
     <div class="main-container">
         <div class="board-header">
             <div class="header-left">
-                <h1 class="title"><strong>Reborn</strong> 커뮤니티</h1>
+                <h1 class="title"><strong></strong> 커뮤니티</h1>
                 <nav class="tab-menu">
                     <a href="{% url 'board:noticelist' %}">공지사항 및 문의</a>
                     <a href="/board/blist/">자유게시판</a>
@@ -36,11 +36,11 @@
         <div class="filter-and-action">
             <div class="filter-buttons">
                 <a href="{% url 'board:map' %}?topic=" class="btn {% if not current_topic %}active{% endif %}">전체보기</a>
-                <a href="{% url 'board:map' %}?topic=free" class="btn {% if current_topic == 'free' %}active{% endif %}">추천 해주세요 💬</a>
-                <a href="{% url 'board:map' %}?topic=hidden_gem" class="btn {% if current_topic == 'hidden_gem' %}active{% endif %}">숨은 맛집 💎</a>
-                <a href="{% url 'board:map' %}?topic=report" class="btn {% if current_topic == 'report' %}active{% endif %}">핫플 📍</a>
-                <a href="{% url 'board:map' %}?topic=family" class="btn {% if current_topic == 'family' %}active{% endif %}">가족/회식 👨‍👩‍👧‍👦</a>
-                <a href="{% url 'board:map' %}?topic=honey_tip" class="btn {% if current_topic == 'honey_tip' %}active{% endif %}">데이트 💡</a>
+                <a href="{% url 'board:map' %}?topic=free" class="btn {% if current_topic == 'free' %}active{% endif %}">추천 해주세요</a>
+                <a href="{% url 'board:map' %}?topic=hidden_gem" class="btn {% if current_topic == 'hidden_gem' %}active{% endif %}">숨은 맛집</a>
+                <a href="{% url 'board:map' %}?topic=report" class="btn {% if current_topic == 'report' %}active{% endif %}">핫플</a>
+                <a href="{% url 'board:map' %}?topic=family" class="btn {% if current_topic == 'family' %}active{% endif %}">가족/회식 </a>
+                <a href="{% url 'board:map' %}?topic=honey_tip" class="btn {% if current_topic == 'honey_tip' %}active{% endif %}">데이트</a>
             </div>
 
             {% if request.session.login_user %}

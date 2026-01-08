@@ -109,7 +109,7 @@
                                 📷 사진 수정 (기존 사진 대체)
                             </label>
                             <input type="file" id="post-edit-images" name="images" multiple accept="image/*" style="display: none;" onchange="updateFileName(this, 'edit-file-name')">
-                            <span id="edit-file-name" style="font-size: 12px; color: #999;">기존 사진이 유지됩니다.</span>
+                            <span id="edit-file-name" style="font-size: 12px; color: #999;">기존 사진이 유지되지 않습니다.</span>
                         </div>
 
                         <textarea name="content" style="width: 100%; height: 300px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 5px;">{{ post.content }}</textarea>
@@ -236,7 +236,57 @@
                     </a>
                 {% endif %}
             </div>
+
+            <div class="category-list-preview" style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 20px;">
+                <div class="category-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 15px; font-weight: normal;">
+                        <strong style="color: #103d91ff;">맛집공유</strong> 카테고리 글
+                    </h3>
+                    <a href="{% url 'board:map' %}" style="font-size: 13px; color: #666; text-decoration: none;">전체글 보기</a>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    {% for p in posts_in_category %}
+                    <tr style="border-bottom: 1px solid #f2f2f2; {% if p.id == post.id %}background-color: #f9f9f9;{% endif %}">
+                        <td style="padding: 12px 5px;">
+                            <a href="{% url 'board:bview' p.id %}" style="text-decoration: none; color: {% if p.id == post.id %}#103d91{% else %}#333{% endif %};">
+                                {{ p.title }}
+                                {% if p.comments.count > 0 %}
+                                <span style="color: #103d91ff; font-size: 12px; margin-left: 5px;">({{ p.comments.count }})</span>
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td style="padding: 12px 5px; text-align: right; color: #999; width: 100px;">
+                            {{ p.created_at|date:"Y. m. d." }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <div class="category-pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 20px; font-size: 14px; color: #666;">
+                    {% if posts_in_category.has_previous %}
+                        <a href="?page={{ posts_in_category.previous_page_number }}" style="text-decoration: none; color: #333;">&lt; 이전</a>
+                    {% else %}
+                        <span style="color: #ccc;">&lt; 이전</span>
+                    {% endif %}
+
+                    <div class="page-numbers">
+                        {{ posts_in_category.number }} / {{ posts_in_category.paginator.num_pages }}
+                    </div>
+
+                    {% if posts_in_category.has_next %}
+                        <a href="?page={{ posts_in_category.next_page_number }}" style="text-decoration: none; color: #333;">다음 &gt;</a>
+                    {% else %}
+                        <span style="color: #ccc;">다음 &gt;</span>
+                    {% endif %}
+                    
+                    <a href="#" style="margin-left: auto; text-decoration: none; color: #333; font-size: 12px;">▲ TOP</a>
+                </div>
+            </div>
+
         </div>
+
+
     </div>
 </div>
 
