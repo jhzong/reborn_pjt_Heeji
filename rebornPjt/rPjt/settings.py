@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'store',
     'restaurants',
     'member',
+    'mypage',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SESSION_SAVE_EVERY_REQUEST = True
 
 LOGIN_URL = '/member/login/'
+
+AUTH_USER_MODEL = 'member.MyUser' # member 앱의 MyUser 모델을 기본 유저로 쓰겠다!
