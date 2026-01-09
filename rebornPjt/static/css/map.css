@@ -173,15 +173,16 @@ body {
 .action-right {
     display: flex;
     align-items: center;
-    gap: 15px; /* 버튼 간의 간격 */
-    flex-shrink: 0; /* 공간이 부족해도 찌그러지지 않게 설정 */
+    gap: 20px;          /* 정렬 버튼과 글쓰기 버튼 사이의 간격 */
+    margin-left: auto;  /* 중요: 왼쪽의 모든 공간을 차지하여 오른쪽 끝으로 밀어냄 */
 }
 
-/* ⭐ 인기순/최신순 버튼 스타일 */
+/* 최신순 | 인기순 그룹 */
 .sort-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 고정 */
 }
 
 .btn-sort {
