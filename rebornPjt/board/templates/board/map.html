@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %} {% block css %}
 <link rel='stylesheet' href="{% static 'css/map.css' %}">
+
 {% endblock css %}
 
 {% block script %}
@@ -14,11 +15,11 @@
     <div class="main-container">
         <div class="board-header">
             <div class="header-left">
-                <h1 class="title"><strong></strong> 커뮤니티</h1>
+                <h1 class="title"><strong></strong> COMMUNITY</h1>
                 <nav class="tab-menu">
                     <a href="{% url 'board:noticelist' %}">공지사항 및 문의</a>
-                    <a href="/board/blist/">자유게시판</a>
                     <a href="/board/map/" class="active">맛집공유</a>
+                    <a href="/board/blist/">자유게시판</a>
                 </nav>
             </div>
             
@@ -42,10 +43,20 @@
                 <a href="{% url 'board:map' %}?topic=family" class="btn {% if current_topic == 'family' %}active{% endif %}">가족/회식 </a>
                 <a href="{% url 'board:map' %}?topic=honey_tip" class="btn {% if current_topic == 'honey_tip' %}active{% endif %}">데이트</a>
             </div>
-
+            <div class="action-right">
+                <div class="sort-group">
+                    <a href="?sort=recent{% if current_topic %}&topic={{ current_topic }}{% endif %}{% if search_kw %}&search={{ search_kw }}{% endif %}" 
+                        class="btn-sort {% if sort == 'recent' or not sort %}active{% endif %}">최신순</a>
+                    <span class="sort-divider">|</span>
+                    <a href="?sort=likes{% if current_topic %}&topic={{ current_topic }}{% endif %}{% if search_kw %}&search={{ search_kw }}{% endif %}" 
+                        class="btn-sort {% if sort == 'likes' %}active{% endif %}">인기순</a>
+                </div>
+                
+            </div>
             {% if request.session.login_user %}
                 <a href="{% url 'board:mwrite' %}" class="btn-write">글쓰기</a>
             {% endif %}
+            
         </div>
 
         <div class="post-list">
@@ -64,6 +75,7 @@
                     </div>
                     <div class="post-meta">
                         by {{ post.author }} | {{ post.created_at|date:"Y.m.d" }} | 조회수 {{ post.views }} 
+                    | <span style="color: #ff4d4d;">{% if post.likes > 0 %}♥{% else %}♡{% endif %}</span>{{ post.likes }}
                     </div>
                 </div>
 

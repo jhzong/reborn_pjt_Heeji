@@ -79,6 +79,7 @@
 
             <div class="comment-container">
                 <span class="comment-count">댓글 {{ comments.count }}개</span>
+                <br>
                 
                 {% if request.session.user_nm %}
                     <form action="{% url 'board:comment_write' post.id %}" method="POST" class="comment-form">
@@ -91,6 +92,7 @@
                         <p style="margin: 0; color: #666;">댓글을 작성하려면 <a href="{% url 'member:login' %}" style="color: #103d91ff; font-weight: bold; ">로그인</a>이 필요합니다.</p>
                     </div>
                 {% endif %}
+                <br><br>
 
                 <ul class="comment-list">
                     {% for comment in comments %}
@@ -160,13 +162,15 @@
                         </li>
                         {% endif %}
                 {% empty %}
+                
                     <li class="no-comment">첫 번째 댓글을 남겨보세요!</li>
                 {% endfor %}
                     </ul>
                 </div>
             </div>
+            <br><br><br>
 
-            <div class="view-nav">
+            {% comment %} <div class="view-nav">
                 {% if prev_post %}
                     <a href="{% url 'board:bview' prev_post.id %}" class="nav-btn" title="이전글">
                         <span class="nav-icon">&lt;</span>
@@ -190,14 +194,14 @@
                         <span class="nav-icon">&gt;</span>
                     </a>
                 {% endif %}
-            </div>
+            </div> {% endcomment %}
 
             <div class="category-list-preview" style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 20px;">
                 <div class="category-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 style="font-size: 15px; font-weight: normal;">
                         <strong style="color: #103d91ff;">자유게시판</strong> 카테고리 글
                     </h3>
-                    <a href="{% url 'board:blist' %}" style="font-size: 13px; color: #666; text-decoration: none;">전체글 보기</a>
+                    <a href="{% url 'board:blist' %}" style="font-size: 13px; color: #666; text-decoration: none;">≡</a>
                 </div>
 
                 <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
@@ -220,9 +224,9 @@
 
                 <div class="category-pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 20px; font-size: 14px; color: #666;">
                     {% if posts_in_category.has_previous %}
-                        <a href="?page={{ posts_in_category.previous_page_number }}" style="text-decoration: none; color: #333;">&lt; 이전</a>
+                        <a href="?page={{ posts_in_category.previous_page_number }}" style="text-decoration: none; color: #333;">&lt; </a>
                     {% else %}
-                        <span style="color: #ccc;">&lt; 이전</span>
+                        <span style="color: #ccc;">&lt; </span>
                     {% endif %}
 
                     <div class="page-numbers">
@@ -230,12 +234,12 @@
                     </div>
 
                     {% if posts_in_category.has_next %}
-                        <a href="?page={{ posts_in_category.next_page_number }}" style="text-decoration: none; color: #333;">다음 &gt;</a>
+                        <a href="?page={{ posts_in_category.next_page_number }}" style="text-decoration: none; color: #333;"> &gt;</a>
                     {% else %}
-                        <span style="color: #ccc;">다음 &gt;</span>
+                        <span style="color: #ccc;"> &gt;</span>
                     {% endif %}
                     
-                    <a href="#" style="margin-left: auto; text-decoration: none; color: #333; font-size: 12px;">▲ TOP</a>
+                    <a href="#" style="margin-left: auto; font-weight: 900; text-decoration: none; color: #8f8f8fff; font-size: 12px;">↑</a>
                 </div>
             </div>
 

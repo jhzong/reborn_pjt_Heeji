@@ -155,10 +155,10 @@
                 <ul class="comment-list">
                     {% for comment in comments %}
                         {% if not comment.parent %}
-                        <li class="comment-item">
+                        <li class="comment-item" style="border-bottom: 1px solid #eee; padding: 15px 0; list-style: none;">
                             <div class="comment-info">
-                                <span class="comment-author">{{ comment.author }}</span>
-                                <span class="comment-date">{{ comment.created_at|date:"Y.m.d H:i" }}</span>
+                                <span class="comment-author" style="font-weight: 700;">{{ comment.author }}</span>
+                                <span class="comment-date" style="color: #999; font-size: 12px; margin-left: 10px;">{{ comment.created_at|date:"Y.m.d H:i" }}</span>
 
                                 <div class="comment-util">
                                     {% if request.session.user_nm == comment.author %}
@@ -176,22 +176,28 @@
 
                             <p class="comment-text" id="content-{{ comment.id }}">{{ comment.content }}</p>
                             {% if comment.image %}
-                            <img src="{{ comment.image.url }}" style="max-width: 250px; border-radius: 8px; cursor: pointer; margin-top:10px;" onclick="zoomImage(this.src)">
+                            <div class="comment-img-box">
+                                <img src="{{ comment.image.url }}" style="max-width: 250px; border-radius: 8px; cursor: pointer; margin-top:10px;" onclick="zoomImage(this.src)">
+                            </div>
                             {% endif %}
 
-                            <form id="edit-form-{{ comment.id }}" action="{% url 'board:comment_update' post.id comment.id %}" method="POST" enctype="multipart/form-data" style="display:none;" class="reply-form">
+                            <form id="edit-form-{{ comment.id }}" action="{% url 'board:comment_update' post.id comment.id %}" method="POST" enctype="multipart/form-data" style="display:none; margin-top: 10px;" class="reply-form">
                                 {% csrf_token %}
-                                <textarea name="content">{{ comment.content }}</textarea>
-                                <button type="submit" class="btn-comment-submit">수정완료</button>
+                                <textarea name="content" style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">{{ comment.content }}</textarea>
+                                <div style="margin-top: 8px; display: flex; align-items: center; gap: 10px;">
+                                    <label for="edit-img-{{ comment.id }}" style="cursor: pointer; background: #f8f9fa; padding: 4px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;">📷 사진 변경</label>
+                                    <input type="file" id="edit-img-{{ comment.id }}" name="image" accept="image/*" style="display: none;" onchange="document.getElementById('edit-file-name-{{ comment.id }}').innerText = this.files[0].name">
+                                    <span id="edit-file-name-{{ comment.id }}" style="font-size: 11px; color: #888;">{% if comment.image %}기존 사진이 변경됩니다.{% endif %}</span>
+                                    <button type="submit" class="btn-comment-submit" style="margin-left: auto;">수정완료</button>
+                                </div>
                             </form>
 
-                            <ul class="reply-list" style="margin-left: 40px; border-left: 2px solid #eee; padding-left: 15px;">
+                            <ul class="reply-list" style="margin-left: 40px; border-left: 2px solid #f2f2f2; padding-left: 15px; margin-top: 10px;">
                                 {% for reply in comment.replies.all %}
-                                <li class="reply-item" style="margin-top: 10px;">
+                                <li class="reply-item" style="margin-bottom: 15px; list-style: none;">
                                     <div class="comment-info">
-                                        <span class="comment-author"> {{ reply.author }}</span>
-                                        <span class="comment-date">{{ reply.created_at|date:"m.d H:i" }}</span>
-
+                                        <span class="comment-author" style="font-weight: 700;">{{ reply.author }}</span>
+                                        <span class="comment-date" style="color: #999; font-size: 11px; margin-left: 8px;">{{ reply.created_at|date:"m.d H:i" }}</span>
                                         {% if request.session.user_nm == reply.author %}
                                         <div class="reply-util">
                                             <a href="javascript:void(0)" onclick="toggleEdit('{{ reply.id }}')" class="btn-edit">수정</a>
@@ -205,8 +211,19 @@
                                     </div>
                                     <p class="comment-text" id="content-{{ reply.id }}">{{ reply.content }}</p>
                                     {% if reply.image %}
-                                    <img src="{{ reply.image.url }}" style="max-width: 180px; border-radius: 8px; cursor: pointer;" onclick="zoomImage(this.src)">
+                                    <img src="{{ reply.image.url }}" style="max-width: 180px; border-radius: 8px; cursor: pointer; margin-top: 5px;" onclick="zoomImage(this.src)">
                                     {% endif %}
+
+                                    <form id="edit-form-{{ reply.id }}" action="{% url 'board:comment_update' post.id reply.id %}" method="POST" enctype="multipart/form-data" style="display:none; margin-top: 10px;" class="reply-form">
+                                        {% csrf_token %}
+                                        <textarea name="content" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">{{ reply.content }}</textarea>
+                                        <div style="margin-top: 5px; display: flex; align-items: center; gap: 10px;">
+                                            <label for="edit-img-{{ reply.id }}" style="cursor: pointer; background: #f8f9fa; padding: 3px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px;">📷 사진 변경</label>
+                                            <input type="file" id="edit-img-{{ reply.id }}" name="image" accept="image/*" style="display: none;" onchange="document.getElementById('edit-file-name-{{ reply.id }}').innerText = this.files[0].name">
+                                            <span id="edit-file-name-{{ reply.id }}" style="font-size: 11px; color: #888;"></span>
+                                            <button type="submit" class="btn-comment-submit" style="margin-left: auto;">수정완료</button>
+                                        </div>
+                                    </form>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -215,8 +232,10 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="parent_id" value="{{ comment.id }}">
                                 <textarea name="content" placeholder="답글을 남겨주세요." required></textarea>
-                                <input type="file" name="image" accept="image/*" style="font-size: 12px; margin-top: 5px;">
-                                <button type="submit" class="btn-comment-submit" style="margin-top: 10px;">답글등록</button>
+                                <div style="margin-top: 5px; display: flex; align-items: center; gap: 10px;">
+                                    <input type="file" name="image" accept="image/*" style="font-size: 12px;">
+                                    <button type="submit" class="btn-comment-submit" style="margin-left: auto;">답글등록</button>
+                                </div>
                             </form>
                         </li>
                         {% endif %}
@@ -224,7 +243,7 @@
                 </ul>
             </div>
 
-            <div class="view-nav">
+            {% comment %} <div class="view-nav">
                 {% if prev_post %}
                     <a href="{% url 'board:bview' prev_post.id %}" class="nav-btn" title="이전글">
                         <span class="nav-icon">&lt;</span>
@@ -248,14 +267,14 @@
                         <span class="nav-icon">&gt;</span>
                     </a>
                 {% endif %}
-            </div>
+            </div> {% endcomment %}
 
             <div class="category-list-preview" style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 20px;">
                 <div class="category-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 style="font-size: 15px; font-weight: normal;">
                         <strong style="color: #103d91ff;">맛집공유</strong> 카테고리 글
                     </h3>
-                    <a href="{% url 'board:map' %}" style="font-size: 13px; color: #666; text-decoration: none;">전체글 보기</a>
+                    <a href="{% url 'board:map' %}" style="font-size: 13px; color: #666; text-decoration: none;">≡</a>
                 </div>
 
                 <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
@@ -278,9 +297,9 @@
 
                 <div class="category-pagination" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 20px; font-size: 14px; color: #666;">
                     {% if posts_in_category.has_previous %}
-                        <a href="?page={{ posts_in_category.previous_page_number }}" style="text-decoration: none; color: #333;">&lt; 이전</a>
+                        <a href="?page={{ posts_in_category.previous_page_number }}" style="text-decoration: none; color: #333;">&lt; </a>
                     {% else %}
-                        <span style="color: #ccc;">&lt; 이전</span>
+                        <span style="color: #ccc;">&lt; </span>
                     {% endif %}
 
                     <div class="page-numbers">
@@ -288,12 +307,12 @@
                     </div>
 
                     {% if posts_in_category.has_next %}
-                        <a href="?page={{ posts_in_category.next_page_number }}" style="text-decoration: none; color: #333;">다음 &gt;</a>
+                        <a href="?page={{ posts_in_category.next_page_number }}" style="text-decoration: none; color: #333;"> &gt;</a>
                     {% else %}
-                        <span style="color: #ccc;">다음 &gt;</span>
+                        <span style="color: #ccc;"> &gt;</span>
                     {% endif %}
                     
-                    <a href="#" style="margin-left: auto; text-decoration: none; color: #333; font-size: 12px;">▲ TOP</a>
+                    <a href="#" style="margin-left: auto; font-weight: 900; text-decoration: none; color: #8f8f8fff; font-size: 12px;">↑</a>
                 </div>
             </div>
         </div>

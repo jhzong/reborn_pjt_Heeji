@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import Post, Comment, PostImage
-from django.db.models import Q # 검색 조건을 위해 필요합니다
+from django.db.models import F, Q # 검색 조건을 위해 필요합니다
 
 # 게시판 리스트는 누구나 볼 수 있음
 def blist(request):
@@ -360,8 +360,8 @@ def nwrite(request):
 
 
 def map(request):
-    # 1. 맛집 기본 필터링
-    all_posts = Post.objects.filter(category='map').order_by('-created_at')
+    # 1. 맛집 기본 필터링 (정렬은 마지막에 한 번만 수행)
+    all_posts = Post.objects.filter(category='map')
 
     # 2. 카테고리(topic) 리스트 가져오기
     topic_list = Post.objects.filter(category='map').values_list('topic', flat=True).distinct()
@@ -369,23 +369,29 @@ def map(request):
     # 3. 파라미터 가져오기
     topic_filter = request.GET.get('topic', '') 
     search_kw = request.GET.get('search', '')
+    sort = request.GET.get('sort', 'recent') # 정렬 파라미터
 
     # 4. 주제 및 검색어 필터링
     if topic_filter:
-        # mwrite에서 'free' 등으로 저장하므로, topic_filter가 'free'라면 바로 필터링이 가능합니다.
-        # 만약 DB에 한글로 저장되어 있다면 아래 mapping이 필요하지만, 위 mwrite 수정안은 영어로 저장합니다.
         all_posts = all_posts.filter(topic=topic_filter)
 
     if search_kw:
         all_posts = all_posts.filter(
             Q(title__icontains=search_kw) | Q(content__icontains=search_kw)
         ).distinct()
-    
-    # 디버깅용 프린트 (필요 시 터미널에서 확인)
-    # print(f"현재 DB에 있는 토픽들: {topic_list}")
-    # print(f"사용자가 클릭한 토픽: {topic_filter}")
 
-    # 5. 페이징 처리
+    # 5. 정렬 처리 (페이징 직전에 수행해야 함)
+    if sort == 'likes':
+        # Post 모델에 'likes' 필드가 실제 있는지 확인하세요. 
+        # 만약 필드명이 다르면 그 이름으로 바꿔야 합니다.
+        all_posts = all_posts.annotate(
+            total_score=F('views') + F('likes')
+        ).order_by('-total_score', '-id') # ID는 동점자 처리용
+    else:
+        # 최신순
+        all_posts = all_posts.order_by('-created_at')
+
+    # 6. 페이징 처리
     paginator = Paginator(all_posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -395,6 +401,7 @@ def map(request):
         'search_kw': search_kw,
         'current_topic': topic_filter,
         'topic_list': topic_list,
+        'sort': sort, # HTML에서 active 표시용
     })
 
 def mwrite(request):
