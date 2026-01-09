@@ -50,7 +50,7 @@
             </div>
 
             <div class="view-content-box">
-                {% if request.session.user_nm == post.author or request.session.user_nm == 'admin' %}
+                {% if request.session.user_nm == post.author or request.session.user_nm == 'Re;born' %}
                     <div id="post-display">
                         <div class="post-text">{{ post.content|linebreaks }}</div>
                     </div>
@@ -74,7 +74,7 @@
                 {% endif %}
             </div>
 
-            {% if request.session.user_nm == post.author or request.session.user_nm == 'admin' %}
+            {% if request.session.user_nm == post.author or request.session.user_nm == 'Re;born' %}
                 <div class="comment-container">
                     <span class="comment-count">답변 {{ comments.count }}개</span>
     
