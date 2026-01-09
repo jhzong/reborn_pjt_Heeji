@@ -30,6 +30,13 @@ class Post(models.Model):
     
     # 맛집 세부 주제를 저장할 필드 추가
     topic = models.CharField(max_length=20, null=True, blank=True)
+    
+    is_notice = models.BooleanField(default=False)  # 상단 고정 여부
+    # 만약 아주 세밀하게 순서를 바꾸고 싶다면 정수형 필드 추가
+    # priority = models.IntegerField(default=0)
+    class Meta:
+        # is_notice가 True인 것을 먼저 보여주고, 그 다음 최신순으로 정렬
+        ordering = ['-is_notice', '-created_at']
 
     # 이 함수는 관리자 페이지(Admin)나 터미널에서 데이터를 조회할 때,
     # 글 번호(Post object) 대신 실제 '글 제목'이 보이게 해주는 역할

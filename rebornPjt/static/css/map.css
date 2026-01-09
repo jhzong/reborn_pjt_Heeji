@@ -306,6 +306,7 @@ body {
     justify-content: center;
     gap: 8px;
 }
+
 .pagination a {
     text-decoration: none;
     color: #5f6368;
@@ -314,13 +315,41 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    border: 1px solid #eee;
+    border-radius: 50%; /* 숫자 배경을 동그랗게 */
     font-size: 14px;
+    transition: all 0.2s;
 }
+
+.pagination a:hover:not(.active) {
+    background-color: #f1f3f4;
+    color: #202124;
+}
+
 .pagination a.active {
-    background-color: #042e5c;
+    background-color: #526379; /* 글쓰기 버튼과 톤 맞춤 */
     color: white;
     font-weight: bold;
-    border-color: #042e5c;
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+}
+
+.pagination .arrow {
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+.num, .arrow { 
+    text-decoration: none; 
+    width: 35px; 
+    height: 35px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border: 1px solid #eee; 
+    color: #666; 
+}
+
+/* 현재 페이지 강조 */
+.num.active { 
+    background: #003366; 
+    color: #fff; 
 }

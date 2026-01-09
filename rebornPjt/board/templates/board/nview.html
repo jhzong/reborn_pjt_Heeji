@@ -49,115 +49,113 @@
                 </div>
             </div>
 
-           <div class="view-content-box">
-                <div id="post-display">
-                    <div class="post-text">{{ post.content|linebreaks }}</div>
-                </div>
+            <div class="view-content-box">
+                {% if request.session.user_nm == post.author or request.session.user_nm == 'admin' %}
+                    <div id="post-display">
+                        <div class="post-text">{{ post.content|linebreaks }}</div>
+                    </div>
 
-                <div id="post-edit-form" style="display: none;">
-                    <form action="{% url 'board:bupdate' post.id %}" method="POST" class="reply-form" style="margin-left:0;">
-                        {% csrf_token %}
-                        <input type="text" name="title" value="{{ post.title }}" 
-                            style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-weight: bold;">
-                        <textarea name="content" style="width: 100%; height: 300px;">{{ post.content }}</textarea>
-                        <div style="text-align: right; margin-top: 10px;">
-                            <button type="submit" class="btn-save">저장</button>
-                            <button type="button" onclick="togglePostEdit()" class="btn-cancel">취소</button>
-                        </div>
-                    </form>
-                </div>
+                    <div id="post-edit-form" style="display: none;">
+                        <form action="{% url 'board:bupdate' post.id %}" method="POST" class="reply-form" style="margin-left:0;">
+                            {% csrf_token %}
+                            <input type="text" name="title" value="{{ post.title }}" 
+                                style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-weight: bold;">
+                            <textarea name="content" style="width: 100%; height: 300px;">{{ post.content }}</textarea>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button type="submit" class="btn-save">저장</button>
+                                <button type="button" onclick="togglePostEdit()" class="btn-cancel">취소</button>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="private-post-notice" style="background:#fcfcfc; padding: 60px 20px; text-align: center; color: #999; border: 1px solid #eee; border-radius: 10px;">
+                        <p style="font-size: 16px;"><span style="font-size: 20px; margin-right: 8px;"></span> 이 게시글은 작성자와 관리자만 확인할 수 있습니다.</p>
+                    </div>
+                {% endif %}
             </div>
 
+            {% if request.session.user_nm == post.author or request.session.user_nm == 'admin' %}
                 <div class="comment-container">
                     <span class="comment-count">답변 {{ comments.count }}개</span>
     
-                    {% if request.session.user_nm == 'admin' %}
-                        <form action="{% url 'board:comment_write' post.id %}" method="POST" class="comment-form">
-                            {% csrf_token %}
-                            <textarea name="content" placeholder="관리자 답변을 입력하세요." required></textarea>
-                            <button type="submit" class="btn-comment-submit">답변등록</button>
-                        </form>
-                    {% else %}
-                        <div class="admin-only-notice" style="background:#f9f9f9; padding:20px; border-radius:10px; color:#777; text-align:center; border:1px dashed #ddd; margin-bottom:20px;">
-                            <i class="fas fa-lock"></i> 공지사항 및 문의 게시판은 관리자만 답변을 작성할 수 있습니다.
-                        </div>
-                    {% endif %}
+                    <form action="{% url 'board:comment_write' post.id %}" method="POST" class="comment-form">
+                        {% csrf_token %}
+                        <textarea name="content" placeholder="댓글을 입력하세요." required></textarea>
+                        <button type="submit" class="btn-comment-submit">답변등록</button>
+                    </form>
 
                     <ul class="comment-list">
                         {% for comment in comments %}
+                            {% if not comment.parent %}
+                            <li class="comment-item">
+                                <div class="comment-info">
+                                    <span class="comment-author">{{ comment.author }}</span>
+                                    <span class="comment-date">{{ comment.created_at|date:"Y.m.d H:i" }}</span>
+                                    
+                                    <div class="comment-util">
+                                        {% if request.session.user_nm == comment.author %}
+                                        <a href="javascript:void(0)" onclick="toggleEdit('{{ comment.id }}')" class="btn-edit">수정</a>
+                                        <span class="util-divider">|</span>
+                                        <form action="{% url 'board:comment_delete' post.id comment.id %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-del" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                        <span class="util-divider">|</span>
+                                        {% endif %}
+                                        <a href="javascript:void(0)" onclick="toggleReply('{{ comment.id }}')" class="btn-reply">답글</a>
+                                    </div>
+                                </div>
 
-        {% if not comment.parent %}
-        <li class="comment-item">
-            <div class="comment-info">
-                <span class="comment-author">{{ comment.author }}</span>
-                <span class="comment-date">{{ comment.created_at|date:"Y.m.d H:i" }}</span>
-                
-                <div class="comment-util">
-                    
-                    {% if request.session.user_nm == comment.author %}
-                    <a href="javascript:void(0)" onclick="toggleEdit('{{ comment.id }}')" class="btn-edit">수정</a>
-                    <span class="util-divider">|</span>
-                    <form action="{% url 'board:comment_delete' post.id comment.id %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-del" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-                    </form>
-                    <span class="util-divider">|</span>
-                    {% endif %}
-                    <a href="javascript:void(0)" onclick="toggleReply('{{ comment.id }}')" class="btn-reply">답글</a>
-                </div>
-            </div>
+                                <p class="comment-text" id="content-{{ comment.id }}">{{ comment.content }}</p>
 
-            <p class="comment-text" id="content-{{ comment.id }}">{{ comment.content }}</p>
+                                <form id="edit-form-{{ comment.id }}" action="{% url 'board:comment_update' post.id comment.id %}" method="POST" style="display:none;" class="reply-form">
+                                    {% csrf_token %}
+                                    <textarea name="content">{{ comment.content }}</textarea>
+                                    <button type="submit" class="btn-comment-submit">수정완료</button>
+                                </form>
 
-            <form id="edit-form-{{ comment.id }}" action="{% url 'board:comment_update' post.id comment.id %}" method="POST" style="display:none;" class="reply-form">
-                {% csrf_token %}
-                <textarea name="content">{{ comment.content }}</textarea>
-                <button type="submit" class="btn-comment-submit">수정완료</button>
-            </form>
+                                <ul class="reply-list" style="margin-left: 40px; border-left: 2px solid #eee; padding-left: 15px;">
+                                    {% for reply in comment.replies.all %}
+                                    <li class="reply-item" style="margin-top: 10px;">
+                                        <div class="comment-info">
+                                            <span class="comment-author"> {{ reply.author }}</span>
+                                            <span class="comment-date">{{ reply.created_at|date:"m.d H:i" }}</span>
 
-            <ul class="reply-list" style="margin-left: 40px; border-left: 2px solid #eee; padding-left: 15px;">
-                {% for reply in comment.replies.all %}
-                <li class="reply-item" style="margin-top: 10px;">
-                    <div class="comment-info">
-                        <span class="comment-author"> {{ reply.author }}</span>
-                        <span class="comment-date">{{ reply.created_at|date:"m.d H:i" }}</span>
+                                            {% if request.session.user_nm == reply.author %}
+                                            <div class="reply-util">
+                                                <a href="javascript:void(0)" onclick="toggleEdit('{{ reply.id }}')" class="btn-edit">수정</a>
+                                                <span style="color:#eee; font-size:10px;">|</span>
+                                                <form action="{% url 'board:comment_delete' post.id reply.id %}" method="POST" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn-del" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                                </form>
+                                            </div>
+                                            {% endif %}
+                                        </div>
 
-                        {% if request.session.user_nm == reply.author %}
-                        <div class="reply-util">
-                            <a href="javascript:void(0)" onclick="toggleEdit('{{ reply.id }}')" class="btn-edit">수정</a>
-                            <span style="color:#eee; font-size:10px;">|</span>
-                            <form action="{% url 'board:comment_delete' post.id reply.id %}" method="POST" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-del" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-                            </form>
-                        </div>
-                        {% endif %}
-                    </div>
+                                        <p class="comment-text" id="content-{{ reply.id }}">{{ reply.content }}</p>
 
-                    <p class="comment-text" id="content-{{ reply.id }}">{{ reply.content }}</p>
+                                        <form id="edit-form-{{ reply.id }}" action="{% url 'board:comment_update' post.id reply.id %}" method="POST" style="display:none;" class="reply-form">
+                                            {% csrf_token %}
+                                            <textarea name="content">{{ reply.content }}</textarea>
+                                            <button type="submit" class="btn-comment-submit">수정완료</button>
+                                        </form>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
 
-                    <form id="edit-form-{{ reply.id }}" action="{% url 'board:comment_update' post.id reply.id %}" method="POST" style="display:none;" class="reply-form">
-                        {% csrf_token %}
-                        <textarea name="content">{{ reply.content }}</textarea>
-                        <button type="submit" class="btn-comment-submit">수정완료</button>
-                    </form>
-                </li>
-                {% endfor %}
-            </ul>
-
-            <form id="reply-form-{{ comment.id }}" action="{% url 'board:comment_write' post.id %}" method="POST" style="display:none; margin-left: 40px;" class="reply-form">
-                {% csrf_token %}
-                <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                <textarea name="content" placeholder="답글을 남겨주세요." required></textarea>
-                <button type="submit" class="btn-comment-submit">답글등록</button>
-            </form>
-        </li>
-        {% endif %}
-    
-    {% endfor %}
+                                <form id="reply-form-{{ comment.id }}" action="{% url 'board:comment_write' post.id %}" method="POST" style="display:none; margin-left: 40px;" class="reply-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                    <textarea name="content" placeholder="답글을 남겨주세요." required></textarea>
+                                    <button type="submit" class="btn-comment-submit">답글등록</button>
+                                </form>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
                     </ul>
                 </div>
-            </div>
+            {% endif %}
 
             <div class="view-nav">
                 {% if prev_post %}

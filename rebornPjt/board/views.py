@@ -289,7 +289,7 @@ def post_like(request, bno):
 def noticelist(request):
     # 1. 모든 게시글을 가져온다. (변수명을 posts로 통일)
     # 모든 게시글을 최신순(ID 역순)으로 가져옵니다.
-    all_posts = Post.objects.filter(category='notice').order_by('-created_at')
+    all_posts = Post.objects.filter(category='notice').order_by('-is_notice','-created_at')
     # 검색어 가져오기
     search_kw = request.GET.get('search', '') # name="search"로 보낸 값
     # 검색어가 있다면 제목에서 검색

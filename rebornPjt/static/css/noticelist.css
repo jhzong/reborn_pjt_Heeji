@@ -159,6 +159,23 @@ body {
 /* ============================================================
    6. 게시글 리스트 아이템
    ============================================================ */
+   /* 일반 게시글 제목 스타일 (기존 유지) */
+.post-title {
+    color: #333;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+/* 🔵 공지사항 게시글 제목 색상 설정 (원하는 색상 코드로 바꾸세요) */
+.post-title.notice-title {
+    color: #0056b3;       /* 예: 진한 파란색 */
+    font-weight: bold;    /* 글씨를 두껍게 해서 강조 */
+}
+
+/* 만약 배경색도 아주 살짝만 깔고 싶다면 (선택 사항) */
+.post-item.notice {
+    background-color: #fcfcfc;
+}
 .post-item { 
     padding: 10px 0; 
     border-bottom: 1px solid #f0f0f0; 

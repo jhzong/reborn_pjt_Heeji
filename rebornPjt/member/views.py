@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password # 비밀번호를 암호�
 from django.contrib.auth.hashers import check_password # 입력한 비번과 암호화된 비번이 맞는지 확인하는 도구
 from django.contrib import messages # 화면에 "성공", "오류" 메시지를 잠시 띄워주는 도구
 from django.contrib.auth import login as auth_login # 이름 중복 방지
+from django.contrib.auth import authenticate, login as auth_login
 from .models import MyUser
 
 #-----------------------------로그인 페이지------------------------------------

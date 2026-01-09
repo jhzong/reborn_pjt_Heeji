@@ -39,18 +39,17 @@
 
         <div class="post-list">
             {% for post in posts %}
-            <div class="post-item {% if forloop.counter <= 2 %}notice{% endif %}">
-                {% if forloop.counter > 2 %}
+            <div class="post-item {% if post.is_notice %}notice{% endif %}">
                 
-                {% endif %}
-                <a href="{% url 'board:bview' post.id %}" class="post-title">{{ post.title }}</a>
+                <a href="{% url 'board:bview' post.id %}" 
+                class="post-title {% if post.is_notice %}notice-title{% endif %}">
+                    {{ post.title }}
+                </a>
+                
                 <div class="post-meta">
                     by {{ post.author }} | {{ post.created_at|date:"Y.m.d" }} | 조회수 {{ post.views }} 
-                    | <span style="color: #ff4d4d;">{% if post.likes > 0 %}♥{% else %}♡{% endif %}</span>{{ post.likes }}
                 </div>
             </div>
-            {% empty %}
-            <div class="no-post">등록된 게시글이 없습니다.</div>
             {% endfor %}
         </div>
 
