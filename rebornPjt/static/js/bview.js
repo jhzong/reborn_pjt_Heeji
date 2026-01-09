@@ -17,6 +17,8 @@ function togglePostEdit() {
 
 // 댓글/답글 수정창 토글
 function toggleEdit(id) {
+    if (!isUserLoggedIn) return; // 비로그인 차단
+    
     const content = document.getElementById(`content-${id}`);
     const form = document.getElementById(`edit-form-${id}`);
     if (content && form) {
@@ -28,6 +30,15 @@ function toggleEdit(id) {
 
 // 답글 입력창 토글
 function toggleReply(id) {
+    // 1. 로그인 체크
+    if (!isUserLoggedIn) {
+        if (confirm("로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
+            location.href = "{% url 'member:login' %}"; // 프로젝트의 로그인 URL로 변경
+        }
+        return;
+    }
+
+    // 2. 로그인된 경우 기존 로직 실행
     const form = document.getElementById(`reply-form-${id}`);
     if (form) {
         form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
