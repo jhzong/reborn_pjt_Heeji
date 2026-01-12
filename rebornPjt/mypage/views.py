@@ -11,7 +11,7 @@ User = get_user_model()
 # 1. 정보 수정 화면 보여주기
 def mychange(request):
     # 로그인 안 된 사용자는 로그인 페이지로 (선택 사항)
-    if not request.user.is_authenticated:
+    if not request.session.get("user_id"):
         return redirect('member:login')
     return render(request, 'mypage/mychange.html')
 
