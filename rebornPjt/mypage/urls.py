@@ -9,4 +9,7 @@ urlpatterns = [
     path('check-duplicate/', views.check_duplicate, name='check_duplicate'),
     path('update/', views.mychange_update, name='mychange_update'),
     
+    path('check_password/', views.check_password, name='check_password'),
+    path('delete/', views.delete_user, name='delete_user'),
+    
 ]
